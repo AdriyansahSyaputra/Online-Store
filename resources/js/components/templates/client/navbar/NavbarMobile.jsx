@@ -8,7 +8,6 @@ import {
     LogOut,
 } from "lucide-react";
 import PropTypes from "prop-types";
-import imageDefault from "../../../../assets/img/default.jpg";
 
 const NavbarMobile = ({ menuItems, setIsOpen, isOpen }) => {
     const accountMenu = [
@@ -39,7 +38,7 @@ const NavbarMobile = ({ menuItems, setIsOpen, isOpen }) => {
                 
                     <div className="flex items-center space-x-4 px-6 py-4 border-b border-gray-200">
                         <img
-                            src={ imageDefault }
+                            src="/assets/img/default.jpg"
                             alt="Profile"
                             className="w-10 h-10 rounded-lg object-cover border-2 border-gray-300 group-hover:border-blue-500"
                         />
