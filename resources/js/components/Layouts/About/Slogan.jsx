@@ -6,7 +6,7 @@ const Slogan = () => {
             <section
                 className="relative py-24 md:py-28 overflow-hidden bg-cover bg-center opacity-80"
                 style={{
-                    backgroundImage: "url('/public/img/banner/about.jpg')",
+                    backgroundImage: "url('/assets/img/banner/about.jpg')",
                 }}
             >
                 {/* Overlay */}

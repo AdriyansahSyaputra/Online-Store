@@ -26,7 +26,7 @@ const CardBlog = ({ title, content, category, date, author, slug }) => {
             >
                 <div className="w-full h-52 overflow-hidden rounded-t-md">
                     <img
-                        src="/public/img/banner.png"
+                        src="/assets/img/banner.png"
                         alt=""
                         className="w-full h-full object-cover"
                     />

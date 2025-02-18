@@ -33,29 +33,29 @@ const VisiMisi = () => {
                                 <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                                     Membangun ekosistem digital yang inklusif
                                     dan berkelanjutan dengan:
-                                    <ul className="mt-4 space-y-2 text-sm md:text-base">
-                                        <li className="flex items-start">
-                                            <CheckCircle className="w-5 h-5 text-indigo-600 mr-2 mt-1" />
-                                            <span>
-                                                Menghadirkan solusi teknologi
-                                                terdepan
-                                            </span>
-                                        </li>
-                                        <li className="flex items-start">
-                                            <CheckCircle className="w-5 h-5 text-indigo-600 mr-2 mt-1" />
-                                            <span>
-                                                Memberdayakan UMKM Indonesia
-                                            </span>
-                                        </li>
-                                        <li className="flex items-start">
-                                            <CheckCircle className="w-5 h-5 text-indigo-600 mr-2 mt-1" />
-                                            <span>
-                                                Menciptakan lapangan kerja
-                                                berkualitas
-                                            </span>
-                                        </li>
-                                    </ul>
                                 </p>
+                                <ul className="mt-4 space-y-2 text-sm md:text-base">
+                                    <li className="flex items-start">
+                                        <CheckCircle className="w-5 h-5 text-indigo-600 mr-2 mt-1" />
+                                        <span>
+                                            Menghadirkan solusi teknologi
+                                            terdepan
+                                        </span>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <CheckCircle className="w-5 h-5 text-indigo-600 mr-2 mt-1" />
+                                        <span>
+                                            Memberdayakan UMKM Indonesia
+                                        </span>
+                                    </li>
+                                    <li className="flex items-start">
+                                        <CheckCircle className="w-5 h-5 text-indigo-600 mr-2 mt-1" />
+                                        <span>
+                                            Menciptakan lapangan kerja
+                                            berkualitas
+                                        </span>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>

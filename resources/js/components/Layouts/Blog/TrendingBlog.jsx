@@ -18,7 +18,7 @@ const TrendingBlog = ({ articles }) => {
                     Trending News
                 </h2>
                 <div className="flex-1 h-0.5 bg-slate-200"></div>
-            </div>
+            </div>  
 
             {/* Blog Posts List */}
             <div className="space-y-2">
@@ -33,7 +33,7 @@ const TrendingBlog = ({ articles }) => {
                             <div className="flex gap-4">
                                 <div className="flex-shrink-0">
                                     <img
-                                        src="/public/img/banner.png"
+                                        src="/assets/img/banner.png"
                                         alt={article.title}
                                         className="w-24 h-20 object-cover rounded-lg"
                                     />

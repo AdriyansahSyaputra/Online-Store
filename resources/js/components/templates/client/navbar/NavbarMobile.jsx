@@ -136,7 +136,6 @@ export default NavbarMobile;
 
 NavbarMobile.propTypes = {
     menuItems: PropTypes.array.isRequired,
-    handleLogout: PropTypes.func.isRequired,
     setIsOpen: PropTypes.func.isRequired,
     isOpen: PropTypes.bool.isRequired,
 };

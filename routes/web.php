@@ -17,3 +17,15 @@ Route::get('/product', function() {
 Route::get('/blogs', function() {
     return inertia('Client/Blog');
 });
+
+Route::get('/contact', function() {
+    return inertia('Client/Contact');
+});
+
+Route::get('/login', function() {
+    return inertia('Auth/Login');
+});
+
+Route::get('/register', function() {
+    return inertia('Auth/Register');
+});
