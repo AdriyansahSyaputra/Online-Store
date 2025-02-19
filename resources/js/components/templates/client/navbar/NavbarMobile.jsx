@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link } from "@inertiajs/react";
 import {
     X,
@@ -79,13 +79,13 @@ const NavbarMobile = ({ menuItems, setIsOpen, isOpen }) => {
                                 <span className="w-5 h-5 text-gray-500">
                                     {item.icon}
                                 </span>
-                                <a
+                                <Link
                                     href={item.link}
                                     className="text-slate-600 hover:text-amber-500 text-base font-medium"
                                     onClick={() => setIsOpen(false)}
                                 >
                                     {item.title}
-                                </a>
+                                </Link>
                             </div>
                         ))}
                     </div>
@@ -103,13 +103,13 @@ const NavbarMobile = ({ menuItems, setIsOpen, isOpen }) => {
                                 <span className="w-5 h-5 text-gray-500">
                                     {item.icon}
                                 </span>
-                                <a
+                                <Link
                                     href={item.link}
                                     className="text-slate-600 hover:text-amber-500 text-base font-medium"
                                     onClick={() => setIsOpen(false)}
                                 >
                                     {item.title}
-                                </a>
+                                </Link>
                             </div>
                         ))}
                     </div>

@@ -6,6 +6,7 @@ import FilterCategories from "../../components/Layouts/Product/FilterCategories"
 import ProductView from "../../components/Layouts/Product/ProductView";
 import categories from "../../utils/categories";
 import products from "../../utils/products";
+import { Head } from "@inertiajs/react";
 
 const Product = () => {
     const [selectedCategories, setSelectedCategories] = useState([]);
@@ -70,6 +71,7 @@ const Product = () => {
 
     return (
         <>
+            <Head title="Product" />
             <Navbar />
             <PromoBanner />
             <main className="md:flex md:px-10 gap-6 my-10">

@@ -10,10 +10,12 @@ import Faq from "../../components/Layouts/About/Faq";
 import Slogan from "../../components/Layouts/About/Slogan";
 import Timeline from "../../components/Layouts/About/Timeline";
 import Team from "../../components/Layouts/About/Team";
+import { Head } from "@inertiajs/react";
 
 const About = () => {
     return (
         <>
+        <Head title="About" />
             <Navbar />
             <Banner
                 title="About Us"

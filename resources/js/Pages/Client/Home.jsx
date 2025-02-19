@@ -6,10 +6,13 @@ import CardCategory from "../../components/Layouts/Home/CardCategory";
 import Flashsale from "../../components/Layouts/Home/Flashsale";
 import TopSelling from "../../components/Layouts/Home/TopSelling";
 import Recommended from "../../components/Layouts/Home/Recommended";
+import { Head } from "@inertiajs/react";
 
 const Home = () => {
     return (
         <>
+            <Head title="Home" />
+
             <Navbar />
             <Banner />
             <main>

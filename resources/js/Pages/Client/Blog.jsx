@@ -6,10 +6,12 @@ import TrendingBlog from "../../components/Layouts/Blog/TrendingBlog";
 import Categories from "../../components/Layouts/Blog/Categories";
 import BlogsSection from "../../components/Layouts/Blog/BlogSection";
 import articles from "../../utils/articles";
+import { Head } from "@inertiajs/react";
 
 const Blog = () => {
     return (
         <>
+            <Head title="Blog" />
             <Navbar />
             <Banner
                 image="/assets/img/banner/about.jpg"

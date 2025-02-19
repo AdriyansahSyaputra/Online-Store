@@ -10,14 +10,10 @@ import {
     ShoppingCart,
     Mail,
     Bell,
-    ChevronDown,
-    User,
-    LogOut,
-    Heart,
     Menu,
-    Settings,
 } from "lucide-react";
 import NavbarMobile from "./NavbarMobile";
+import CartSidebarDesktop from "../../../Layouts/CartSidebarDesktop/CartSidebarDesktop";
 
 const menuItems = [
     { title: "Home", icon: <House />, link: "/" },
@@ -30,10 +26,12 @@ const menuItems = [
 const Navbar = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const [isCartOpen, setIsCartOpen] = useState(false);
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
+
     return (
         <>
             <header className="bg-white lg:border-b border-gray-200">
@@ -70,7 +68,10 @@ const Navbar = () => {
 
                         {/* Desktop Cart and Auth */}
                         <div className="hidden lg:flex items-center space-x-10 ">
-                            <button className="text-slate-700 hover:text-amber-500 hidden lg:flex items-center relative">
+                            <button
+                                onClick={() => setIsCartOpen(true)}
+                                className="text-slate-700 hover:text-amber-500 hidden lg:flex items-center relative"
+                            >
                                 <ShoppingCart size={20} />
 
                                 {/* Badge for Cart */}
@@ -174,7 +175,7 @@ const Navbar = () => {
 
                         {/* Login Button */}
                         <div className="hidden lg:flex space-x-2">
-                            <Link to="/login">
+                            <Link href="/login">
                                 <button className="px-3 py-2 bg-teal-500 text-slate-100 rounded-md text-sm font-semibold hover:bg-teal-600">
                                     Login
                                 </button>
@@ -188,13 +189,13 @@ const Navbar = () => {
                     <nav className="hidden lg:flex mt-2 ">
                         <div className="mx-auto flex space-x-8 items-center">
                             {menuItems.map((item) => (
-                                <a
+                                <Link
                                     href={item.link}
                                     key={item.title}
                                     className="text-slate-700 hover:text-amber-500 text-base font-medium"
                                 >
                                     {item.title}
-                                </a>
+                                </Link>
                             ))}
                         </div>
                     </nav>
@@ -220,7 +221,7 @@ const Navbar = () => {
 
                         {/* Mobile Icons */}
                         <div className="flex items-center space-x-4">
-                            <Link to="/cart">
+                            <Link href="/cart">
                                 <button className="text-slate-700 hover:text-amber-500 items-center relative">
                                     <ShoppingCart size={20} />
 
@@ -264,6 +265,11 @@ const Navbar = () => {
                     />
                 </div>
             </header>
+
+            <CartSidebarDesktop
+                isCartOpen={isCartOpen}
+                setIsCartOpen={setIsCartOpen}
+            />
         </>
     );
 };

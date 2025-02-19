@@ -8,6 +8,7 @@ import CardInfoMobile from "../../components/Layouts/Contact/CardInfoMobile";
 import Map from "../../components/Layouts/Contact/Map";
 import FormContact from "../../components/Fragments/FormContact";
 import { Headset, MessageCircleMore, Mail } from "lucide-react";
+import { Head } from "@inertiajs/react";
 
 const contactSupport = [
     {
@@ -33,6 +34,7 @@ const contactSupport = [
 const Contact = () => {
     return (
         <>
+            <Head title="Contact" />
             <Navbar />
             <Banner
                 image="/assets/img/banner/about.jpg"
