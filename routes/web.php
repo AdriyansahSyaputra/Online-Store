@@ -29,3 +29,7 @@ Route::get('/login', function() {
 Route::get('/register', function() {
     return inertia('Auth/Register');
 });
+
+Route::get('/cart', function() {
+    return inertia('Client/CartMobile');
+});
