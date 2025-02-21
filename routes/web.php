@@ -33,3 +33,8 @@ Route::get('/register', function() {
 Route::get('/cart', function() {
     return inertia('Client/CartMobile');
 });
+
+// Route for admin panel
+Route::get('/dashboard', function() {
+    return inertia('Admin/Dashboard');
+});
