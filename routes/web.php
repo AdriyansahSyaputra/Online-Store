@@ -38,3 +38,11 @@ Route::get('/cart', function() {
 Route::get('/dashboard', function() {
     return inertia('Admin/Dashboard');
 });
+
+Route::get('/dashboard/products', function() {
+    return inertia('Admin/Product');
+});
+
+Route::get('/dashboard/users', function() {
+    return inertia('Admin/User');
+});

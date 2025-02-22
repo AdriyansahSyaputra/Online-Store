@@ -15,7 +15,11 @@ import {
 import { Link } from "@inertiajs/react";
 
 const menuItems = [
-    { title: "Dashboard", icon: <Menu className="w-5 h-5" />, link: "/dashboard" },
+    {
+        title: "Dashboard",
+        icon: <Menu className="w-5 h-5" />,
+        link: "/dashboard",
+    },
     {
         title: "Product",
         icon: <Package className="w-5 h-5" />,
@@ -64,29 +68,30 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     return (
         <aside
             className={`bg-white flex flex-col fixed inset-y-0 shadow-lg transition-all duration-300 ease-in-out ${
-                isSidebarOpen ? "w-64" : "w-20"
+                isSidebarOpen ? "w-60" : "w-20"
             }`}
         >
             <div className="py-6 px-4 flex items-center justify-between border-b border-gray-100">
-                {!isSidebarOpen && (
+                {isSidebarOpen && (
                     <h1 className="text-xl font-bold text-indigo-600">
                         Shopify
                     </h1>
                 )}
-                {isSidebarOpen && (
+                {!isSidebarOpen && (
                     <div className="mx-auto">
                         <h1 className="text-xl font-bold text-indigo-600">S</h1>
                     </div>
                 )}
 
+                {/* Tombol Chevron untuk buka/tutup sidebar */}
                 <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                     className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition-all"
                 >
                     {isSidebarOpen ? (
-                        <ChevronRight className="w-5 h-5" />
-                    ) : (
                         <ChevronLeft className="w-5 h-5" />
+                    ) : (
+                        <ChevronRight className="w-5 h-5" />
                     )}
                 </button>
             </div>
@@ -99,7 +104,9 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                             href={item.link}
                             onClick={() => setActiveItem(item.link)}
                             className={`flex items-center ${
-                                isSidebarOpen ? "justify-center" : "justify-start"
+                                isSidebarOpen
+                                    ? "justify-start"
+                                    : "justify-center"
                             } gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                                 activeItem === item.link
                                     ? "bg-indigo-50 text-indigo-600"
@@ -116,7 +123,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                                 {item.icon}
                             </div>
 
-                            {!isSidebarOpen && (
+                            {isSidebarOpen && (
                                 <span
                                     className={`${
                                         activeItem === item.link
@@ -132,17 +139,18 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 </nav>
             </div>
 
+            {/* User Section */}
             <div className="p-4 border-t border-gray-100">
                 <div
                     className={`flex ${
-                        isSidebarOpen ? "justify-center" : "items-center gap-3"
+                        isSidebarOpen ? "justify-start" : "justify-center"
                     }`}
                 >
                     <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
                         <User className="w-4 h-4 text-indigo-600" />
                     </div>
-                    {!isSidebarOpen && (
-                        <div>
+                    {isSidebarOpen && (
+                        <div className="ml-3">
                             <p className="text-sm font-medium text-gray-700">
                                 Admin User
                             </p>
