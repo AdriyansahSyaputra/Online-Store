@@ -46,3 +46,7 @@ Route::get('/dashboard/products', function() {
 Route::get('/dashboard/users', function() {
     return inertia('Admin/User');
 });
+
+Route::get('/dashboard/orders', function() {
+    return inertia('Admin/Order');
+});

@@ -38,7 +38,7 @@ const menuItems = [
     {
         title: "Order",
         icon: <Send className="w-5 h-5" />,
-        link: "/dashboard/send",
+        link: "/dashboard/orders",
     },
     {
         title: "Shipping",
