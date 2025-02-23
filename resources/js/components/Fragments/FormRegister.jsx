@@ -1,61 +1,79 @@
-import React, { useState } from "react";
-import { CircleUser, Lock, Eye, EyeOff, Phone, Mail } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { CircleUser, Lock, Eye, EyeOff, Mail } from "lucide-react";
 import InputLabel from "../Elements/Input/InputLabel";
+import Alert from "./Alert";
+import { useForm } from "@inertiajs/react";
 
 const FormRegister = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [alert, setAlert] = useState(false);
-    const [form, setForm] = useState({
-        email: "",
+
+    const { data, setData, post, processing, errors } = useForm({
+        name: "",
         username: "",
-        phone: "",
+        email: "",
         password: "",
-        confirmPassword: "",
+        password_confirmation: "",
     });
 
     const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        setData(e.target.name, e.target.value);
         setErrorMessage("");
     };
 
-    // Validasi form
-    const validateForm = () => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const phoneRegex = /^[0-9]{10,15}$/;
-
-        if (!emailRegex.test(form.email.trim())) {
-            setErrorMessage("Invalid email format");
-            return false;
-        }
-
-        if (!phoneRegex.test(form.phone)) {
-            setErrorMessage("Phone number must contain 10-15 digits");
-            return false;
-        }
-
-        if (form.password.length < 8) {
-            setErrorMessage("Password must be at least 8 characters");
-            return false;
-        }
-
-        if (form.password !== form.confirmPassword) {
-            setErrorMessage("Password and Confirm Password must match");
-            return false;
-        }
-
-        return true;
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        post("/register", {
+            onSuccess: () => {
+                setAlert(true);
+            },
+            onError: (errors) => {
+                setErrorMessage(
+                    "Registration failed. Please check your input."
+                );
+            },
+        });
     };
+
+    useEffect(() => {
+        if (alert) {
+            const timer = setTimeout(() => {
+                setAlert(false);
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [alert]);
 
     return (
         <>
-            {/* <Alert
+            <Alert
                 isOpen={alert}
                 action="Register Success"
                 message="Register successfully, please login to your account now!"
-            /> */}
-            <form className="space-y-4">
+            />
+            <form className="space-y-4" onSubmit={handleSubmit}>
+                {/* Name Input */}
+                <div className="relative">
+                    <InputLabel
+                        icon={<CircleUser className="text-gray-400 w-5 h-5" />}
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Name"
+                        label="Name"
+                        onChange={handleChange}
+                        value={data.name}
+                        required
+                    />
+                    {errors.name && (
+                        <p className="text-xs md:text-sm text-red-500 font-medium">
+                            {errors.name}
+                        </p>
+                    )}
+                </div>
+
                 {/* Username Input */}
                 <div className="relative">
                     <InputLabel
@@ -63,42 +81,37 @@ const FormRegister = () => {
                         type="text"
                         id="username"
                         name="username"
-                        placeholder="Full Name"
-                        label="Full Name"
+                        placeholder="Username"
+                        label="Username"
                         onChange={handleChange}
-                        value={form.username}
+                        value={data.username}
                         required
                     />
+                    {errors.username && (
+                        <p className="text-xs md:text-sm text-red-500 font-medium">
+                            {errors.username}
+                        </p>
+                    )}
                 </div>
 
                 {/* Email Input */}
                 <div className="relative">
                     <InputLabel
                         icon={<Mail className="text-gray-400 w-5 h-5" />}
-                        type="text"
+                        type="email"
                         id="email"
                         name="email"
-                        placeholder="Email / Phone"
+                        placeholder="Email"
                         label="Email"
                         onChange={handleChange}
-                        value={form.email}
+                        value={data.email}
                         required
                     />
-                </div>
-
-                {/* Phone Input */}
-                <div className="relative">
-                    <InputLabel
-                        icon={<Phone className="text-gray-400 w-5 h-5" />}
-                        type="text"
-                        id="phone"
-                        name="phone"
-                        placeholder="Phone"
-                        label="Phone"
-                        onChange={handleChange}
-                        value={form.phone}
-                        required
-                    />
+                    {errors.email && (
+                        <p className="text-xs md:text-sm text-red-500 font-medium">
+                            {errors.email}
+                        </p>
+                    )}
                 </div>
 
                 {/* Password Input */}
@@ -111,7 +124,7 @@ const FormRegister = () => {
                         placeholder="Password"
                         label="Password"
                         onChange={handleChange}
-                        value={form.password}
+                        value={data.password}
                         required
                     />
                     <button
@@ -125,6 +138,11 @@ const FormRegister = () => {
                             <EyeOff size={20} />
                         )}
                     </button>
+                    {errors.password && (
+                        <p className="text-xs md:text-sm text-red-500 font-medium">
+                            {errors.password}
+                        </p>
+                    )}
                 </div>
 
                 {/* Confirm Password */}
@@ -132,12 +150,12 @@ const FormRegister = () => {
                     <InputLabel
                         icon={<Lock className="text-gray-400 w-5 h-5" />}
                         type={showConfirmPassword ? "text" : "password"}
-                        id="confirmPassword"
-                        name="confirmPassword"
+                        id="password_confirmation"
+                        name="password_confirmation"
                         placeholder="Confirm Password"
                         label="Confirm Password"
                         onChange={handleChange}
-                        value={form.confirmPassword}
+                        value={data.password_confirmation}
                         required
                     />
                     <button
@@ -153,61 +171,21 @@ const FormRegister = () => {
                             <EyeOff size={20} />
                         )}
                     </button>
+                    {errors.password_confirmation && (
+                        <p className="text-xs md:text-sm text-red-500 font-medium">
+                            {errors.password_confirmation}
+                        </p>
+                    )}
                 </div>
-
-                {/* Error message */}
-          
-                    <p className="text-xs md:text-sm text-red-500 font-medium">
-                        error message
-                    </p>
-               
 
                 {/* Register Button */}
                 <button
                     type="submit"
                     className="w-full bg-blue-600 text-white py-3 rounded-lg hover:opacity-90 transition duration-300 flex items-center justify-center font-medium"
+                    disabled={processing}
                 >
-                    Sign Up
+                    {processing ? "Processing..." : "Sign Up"}
                 </button>
-
-                {/* Divider */}
-                <div className="mt-10 flex items-center gap-4">
-                    <span className="flex-grow border-t border-gray-300"></span>
-                    <p className="text-sm text-gray-500 whitespace-nowrap">
-                        or continue with
-                    </p>
-                    <span className="flex-grow border-t border-gray-300"></span>
-                </div>
-
-                {/* Social Register Buttons */}
-                <div className="space-y-4">
-                    <button
-                        type="button"
-                        className="w-full bg-white border border-gray-300 py-3 rounded-lg hover:bg-slate-50 flex items-center justify-center gap-3"
-                    >
-                        <img
-                            src="/assets/img/icon/google.png"
-                            alt="Google Icon"
-                            className="h-6 w-6"
-                        />
-                        <span className="text-sm md:text-base font-medium">
-                            Google
-                        </span>
-                    </button>
-                </div>
-
-                {/* Sign Up Option */}
-                <div className="text-center mt-4">
-                    <p className="text-sm text-gray-600">
-                        Have an account?
-                        <a
-                            href="/login"
-                            className="ml-1 text-blue-600 font-semibold hover:underline"
-                        >
-                            Login
-                        </a>
-                    </p>
-                </div>
             </form>
         </>
     );

@@ -1,29 +1,40 @@
 import React, { useState } from "react";
 import { CircleUser, Lock, Eye, EyeOff } from "lucide-react";
 import InputLabel from "../Elements/Input/InputLabel";
+import { useForm } from "@inertiajs/react";
 
 const FormLogin = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const [form, setForm] = useState({
+
+    const { data, setData, post, processing, errors } = useForm({
         email: "",
         password: "",
     });
 
     const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        setData(e.target.name, e.target.value);
         setErrorMessage("");
     };
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        post("/login", {
+            onSuccess: () => {},
+            onError: (errors) => {
+                setErrorMessage("Login failed. Please check your input.");
+            },
+        });
+    };
 
     return (
         <>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
                 {/* Email Input */}
                 <div className="relative">
                     <InputLabel
                         icon={<CircleUser className="text-gray-400 w-5 h-5" />}
-                        type="text"
+                        type="email"
                         id="email"
                         name="email"
                         placeholder="Email / Phone"
@@ -58,11 +69,9 @@ const FormLogin = () => {
                     </button>
                 </div>
 
-
-                    <p className="text-xs md:text-sm text-red-500 font-medium">
-                        Error message
-                    </p>
-                
+                <p className="text-xs md:text-sm text-red-500 font-medium">
+                    Error message
+                </p>
 
                 {/* Forgot Password */}
                 <div className="flex justify-between">
