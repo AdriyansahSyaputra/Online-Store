@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "@inertiajs/react";
+import { Link, usePage, router } from "@inertiajs/react";
+import { Inertia } from "@inertiajs/inertia";
 import {
     House,
     Box,
@@ -11,6 +12,11 @@ import {
     Mail,
     Bell,
     Menu,
+    ChevronDown,
+    User,
+    Settings,
+    Heart,
+    LogOut,
 } from "lucide-react";
 import NavbarMobile from "./NavbarMobile";
 import CartSidebarDesktop from "../../../Layouts/CartSidebarDesktop/CartSidebarDesktop";
@@ -27,9 +33,18 @@ const Navbar = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const { auth } = usePage().props;
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
+    };
+
+    const handleLogout = () => {
+        router.post("/logout", {}, {
+            onSuccess: () => {
+                router.visit("/");
+            }
+        });
     };
 
     return (
@@ -99,88 +114,92 @@ const Navbar = () => {
                         </div>
 
                         {/* User Section */}
-                        {/* <div className="hidden lg:flex relative ml-7 lg:ml-0">
-                            <div
-                                onClick={toggleDropdown}
-                                className="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 p-2 rounded-lg transition-all duration-300"
-                            >
-                                <img
-                                    src={"default.jpg"}
-                                    alt="Profile"
-                                    className="w-10 h-10 rounded-full object-cover border-2 border-gray-300 group-hover:border-blue-500"
-                                />
-                                <div>
-                                    <p className="text-sm font-semibold text-gray-800">
-                                        Guest
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                        Online
-                                    </p>
-                                </div>
-                                <ChevronDown
-                                    className={`w-4 h-4 ml-2 transform transition-transform ${
-                                        isDropdownOpen ? "rotate-180" : ""
-                                    }`}
-                                />
-                            </div>
-
-                            {isDropdownOpen && (
-                                <div className="absolute right-0 mt-16 w-56 bg-white shadow-xl rounded-lg border border-gray-100 z-50 overflow-hidden">
-                                    <div className="px-4 py-3 border-b border-gray-200">
-                                        <p className="text-sm font-medium text-gray-900">
-                                            Guest
+                        {auth.user ? (
+                            <div className="hidden lg:flex relative ml-7 lg:ml-0">
+                                <div
+                                    onClick={toggleDropdown}
+                                    className="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 p-2 rounded-lg transition-all duration-300"
+                                >
+                                    <img
+                                        src="/assets/img/default.jpg"
+                                        alt={auth.user.name}
+                                        className="w-10 h-10 rounded-full object-cover border-2 border-gray-300 group-hover:border-blue-500"
+                                    />
+                                    <div>
+                                        <p className="text-sm font-semibold text-gray-800">
+                                            {auth.user.name || "Guest"}
                                         </p>
-                                        <p className="text-xs text-gray-500 truncate">
-                                            johndoe@gmail.com
+                                        <p className="text-xs text-gray-500">
+                                            Online
                                         </p>
                                     </div>
-                                    <ul className="py-1">
-                                        <li>
-                                            <a
-                                                href="/profile"
-                                                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                                            >
-                                                <User className="w-4 h-4 mr-2" />{" "}
-                                                Profile
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a
-                                                href="/settings"
-                                                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                                            >
-                                                <Settings className="w-4 h-4 mr-2" />{" "}
-                                                Settings
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                                                <Heart className="w-4 h-4 mr-2" />{" "}
-                                                Wishlist
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <hr className="my-1 border-gray-200" />
-                                        </li>
-                                        <li>
-                                            <button className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                                                <LogOut className="w-4 h-4 mr-2" />{" "}
-                                                Logout
-                                            </button>
-                                        </li>
-                                    </ul>
+                                    <ChevronDown
+                                        className={`w-4 h-4 ml-2 transform transition-transform ${
+                                            isDropdownOpen ? "rotate-180" : ""
+                                        }`}
+                                    />
                                 </div>
-                            )}
-                        </div> */}
 
-                        {/* Login Button */}
-                        <div className="hidden lg:flex space-x-2">
-                            <Link href="/login">
-                                <button className="px-3 py-2 bg-teal-500 text-slate-100 rounded-md text-sm font-semibold hover:bg-teal-600">
-                                    Login
-                                </button>
-                            </Link>
-                        </div>
+                                {isDropdownOpen && (
+                                    <div className="absolute right-0 mt-16 w-56 bg-white shadow-xl rounded-lg border border-gray-100 z-50 overflow-hidden">
+                                        <div className="px-4 py-3 border-b border-gray-200">
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {auth.user.name || "Guest"}
+                                            </p>
+                                            <p className="text-xs text-gray-500 truncate">
+                                                {auth.user.email}
+                                            </p>
+                                        </div>
+                                        <ul className="py-1">
+                                            <li>
+                                                <a
+                                                    href="/profile"
+                                                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                                >
+                                                    <User className="w-4 h-4 mr-2" />{" "}
+                                                    Profile
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a
+                                                    href="/settings"
+                                                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                                >
+                                                    <Settings className="w-4 h-4 mr-2" />{" "}
+                                                    Settings
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                                    <Heart className="w-4 h-4 mr-2" />{" "}
+                                                    Wishlist
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <hr className="my-1 border-gray-200" />
+                                            </li>
+                                            <li>
+                                                <button
+                                                    onClick={handleLogout}
+                                                    className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                                >
+                                                    <LogOut className="w-4 h-4 mr-2" />{" "}
+                                                    Logout
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="hidden lg:flex space-x-2">
+                                <Link href="/login">
+                                    <button className="px-3 py-2 bg-teal-500 text-slate-100 rounded-md text-sm font-semibold hover:bg-teal-600">
+                                        Login
+                                    </button>
+                                </Link>
+                            </div>
+                        )}
                     </div>
 
                     <div className="border-t hidden lg:block border-gray-200 mt-4"></div>

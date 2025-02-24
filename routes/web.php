@@ -6,7 +6,7 @@ use App\Http\Controllers\RegisterController;
 
 Route::get('/', function () {
     return inertia('Client/Home');
-})->middleware('customer')->name('home');
+})->name('home');
 
 Route::get('/about', function() {
     return inertia('Client/About');
@@ -53,4 +53,5 @@ Route::controller(RegisterController::class)->group(function () {
 Route::controller(LoginController::class)->group(function () {
     Route::get('/login', 'index')->name('login');
     Route::post('/login', 'login');
+    Route::post('/logout', 'logout')->name('logout');
 });
