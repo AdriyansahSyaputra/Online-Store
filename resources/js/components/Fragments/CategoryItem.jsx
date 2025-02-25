@@ -14,8 +14,8 @@ const CategoryItem = ({
             <div className="flex items-center space-x-3">
                 <Checkbox
                     id={`category-${category.id}`}
-                    checked={selectedCategories.includes(category.name)}
-                    onChange={() => handleCheckboxChange(category.name)}
+                    checked={selectedCategories.includes(category.id)}
+                    onChange={() => handleCheckboxChange(category.id)}
                 />
                 <LabelCategory
                     htmlFor={`category-${category.id}`}
@@ -23,7 +23,7 @@ const CategoryItem = ({
                     isSelected={selectedCategories.includes(category.name)}
                 />
             </div>
-            <Badge count={category.count} />
+            <Badge count={category.products_count} />
         </div>
     );
 };

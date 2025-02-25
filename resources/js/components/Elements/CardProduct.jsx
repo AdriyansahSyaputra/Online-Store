@@ -1,11 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Heart, Star, Check, X } from "lucide-react";
+import { Link } from "@inertiajs/react";
+import axios from "axios";
 
 const CardProduct = ({ product }) => {
+    const [quantity, setQuantity] = useState(1);
+
+    const handleAddToCart = async (e) => {
+        e.stopPropagation();
+        try {
+            const response = await axios.post("/cart/add", {
+                product_id: product.id,
+                quantity: quantity,
+            });
+            alert(response.data.message);
+            console.log("Cart: ", response.data.cart);
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                alert("You must be logged in to add products to cart");
+            } else if (error.response && error.response.status === 400) {
+                alert(error.response.data.message); // Tampilkan pesan error dari backend
+            } else {
+                console.error("Error adding to cart:", error);
+                alert("Failed to add product to cart");
+            }
+        }
+    };
 
     return (
-        <div
+        <Link
+            href={`/product/${product.slug}`}
             className="p-4 rounded-md bg-white h-full flex flex-col cursor-pointer"
         >
             <div className="relative mb-4">
@@ -15,13 +40,10 @@ const CardProduct = ({ product }) => {
                     className="w-full h-32 object-cover rounded-md"
                 />
                 <button
+                    onClick={(e) => e.stopPropagation()}
                     className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow hover:bg-gray-100 transition-all duration-200"
                 >
-                    <Heart
-                        size={20}
-                        fill="red"
-                        className="text-red-500"
-                    />
+                    <Heart size={20} fill="red" className="text-red-500" />
                 </button>
             </div>
 
@@ -63,11 +85,12 @@ const CardProduct = ({ product }) => {
             </div>
 
             <button
+                onClick={handleAddToCart}
                 className="w-full bg-blue-600 text-white py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-all duration-200"
             >
                 Add To Cart
             </button>
-        </div>
+        </Link>
     );
 };
 

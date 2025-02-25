@@ -4,11 +4,9 @@ import Footer from "../../components/templates/client/footer/Footer";
 import PromoBanner from "../../components/Layouts/Product/PromoBanner";
 import FilterCategories from "../../components/Layouts/Product/FilterCategories";
 import ProductView from "../../components/Layouts/Product/ProductView";
-import categories from "../../utils/categories";
-import products from "../../utils/products";
 import { Head } from "@inertiajs/react";
 
-const Product = () => {
+const Product = ({ products, categories }) => {
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState(products);
     const [isOpen, setIsOpen] = useState(false);
@@ -35,15 +33,11 @@ const Product = () => {
             setFilteredProducts(products);
         } else {
             const filtered = products.filter((product) =>
-                selectedCategories.some(
-                    (category) =>
-                        category.toLowerCase() ===
-                        product.category.toLowerCase()
-                )
+                selectedCategories.includes(product.category_id)
             );
             setFilteredProducts(filtered);
         }
-    }, [selectedCategories]);
+    }, [selectedCategories, products]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -68,6 +62,13 @@ const Product = () => {
             handleApplyFilters();
         }
     }, [selectedCategories, isMobile, handleApplyFilters]);
+
+    // Efek untuk menutup filter saat beralih dari mobile ke desktop
+    useEffect(() => {
+        if (!isMobile) {
+            setIsOpen(false);
+        }
+    }, [isMobile]);
 
     return (
         <>
