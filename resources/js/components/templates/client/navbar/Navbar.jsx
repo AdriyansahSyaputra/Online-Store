@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link, usePage, router } from "@inertiajs/react";
-import { Inertia } from "@inertiajs/inertia";
 import {
     House,
     Box,
@@ -20,6 +19,7 @@ import {
 } from "lucide-react";
 import NavbarMobile from "./NavbarMobile";
 import CartSidebarDesktop from "../../../Layouts/CartSidebarDesktop/CartSidebarDesktop";
+import { useCart } from "../../../../contexts/CartContext";
 
 const menuItems = [
     { title: "Home", icon: <House />, link: "/" },
@@ -34,17 +34,22 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const { auth } = usePage().props;
+    const { cartItemCount, cartItems } = useCart();
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
 
     const handleLogout = () => {
-        router.post("/logout", {}, {
-            onSuccess: () => {
-                router.visit("/");
+        router.post(
+            "/logout",
+            {},
+            {
+                onSuccess: () => {
+                    router.visit("/");
+                },
             }
-        });
+        );
     };
 
     return (
@@ -91,9 +96,11 @@ const Navbar = () => {
 
                                 {/* Badge for Cart */}
 
-                                <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-amber-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
-                                    5
-                                </span>
+                                {cartItemCount > 0 && (
+                                    <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-amber-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
+                                        {cartItemCount}
+                                    </span>
+                                )}
                             </button>
                             <button className="text-gray-600 hover:text-amber-500 relative">
                                 <Mail size={20} />
@@ -288,6 +295,7 @@ const Navbar = () => {
             <CartSidebarDesktop
                 isCartOpen={isCartOpen}
                 setIsCartOpen={setIsCartOpen}
+                cartItems={cartItems}
             />
         </>
     );

@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Client\Controllers\CartController;
 use Inertia\Inertia;
 use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Client\ProductController;
 

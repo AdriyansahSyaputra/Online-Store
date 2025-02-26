@@ -3,8 +3,7 @@ import Header from "./Header";
 import CartItem from "./CartItem";
 import Footer from "./Footer";
 
-const CartSidebarDesktop = ({ isCartOpen, setIsCartOpen }) => {
-
+const CartSidebarDesktop = ({ isCartOpen, setIsCartOpen}) => {
   return (
     <>
       <aside
