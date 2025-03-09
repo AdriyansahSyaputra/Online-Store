@@ -62,4 +62,7 @@ Route::controller(ProductController::class)->group(function () {
 });
 
 
-Route::post('/cart/add', [CartController::class, 'addToCart']);
+Route::middleware('auth')->group(function () {
+    Route::post('/cart/add', [CartController::class, 'addToCart']);
+    Route::delete('/cart/remove/{productId}', [CartController::class, 'removeFromCart']);
+});

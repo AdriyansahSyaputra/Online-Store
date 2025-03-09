@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
+    /**
+     * Tambah produk ke dalam keranjang
+     */
     public function addToCart(Request $request)
     {
         if (!Auth::check()) {
@@ -24,39 +27,38 @@ class CartController extends Controller
         // Validasi input
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
+            'quantity'   => 'required|integer|min:1',
         ]);
 
-        // Ambil produk dan pastikan stok mencukupi
-        $product = Product::findOrFail($request->product_id);
-        if ($product->stock < $request->quantity) {
-            return response()->json([
-                'message' => 'Insufficient stock',
-            ], 400);
+        $userId   = Auth::id();
+        $product  = Product::findOrFail($request->product_id);
+        $quantity = $request->quantity;
+
+        // Cek stok
+        if ($product->stock < $quantity) {
+            return response()->json(['message' => 'Insufficient stock'], 400);
         }
 
         DB::beginTransaction();
         try {
-            // Ambil atau buat cart
-            $cart = Cart::firstOrCreate([
-                'user_id' => Auth::id(),
-            ]);
+            // Ambil cart user atau buat baru
+            $cart = Cart::firstOrCreate(['user_id' => $userId]);
 
-            // Ambil item yang sudah ada
-            $cartItem = CartItem::where('cart_id', $cart->id)
-                ->where('product_id', $request->product_id)
-                ->first();
+            // Ambil item yang sudah ada di cart
+            $cartItem = $cart->items()->where('product_id', $product->id)->first();
 
             if ($cartItem) {
-                // Jika item sudah ada, update quantity
-                $cartItem->update([
-                    'quantity' => $cartItem->quantity + $request->quantity,
-                ]);
+                $newQuantity = $cartItem->quantity + $quantity;
+
+                if ($newQuantity > $product->stock) {
+                    return response()->json(['message' => 'Insufficient stock'], 400);
+                }
+
+                $cartItem->update(['quantity' => $newQuantity]);
             } else {
-                // Jika belum ada, tambahkan item baru
                 $cart->items()->create([
-                    'product_id' => $request->product_id,
-                    'quantity' => $request->quantity,
+                    'product_id' => $product->id,
+                    'quantity'   => $quantity,
                 ]);
             }
 
@@ -64,17 +66,18 @@ class CartController extends Controller
 
             return response()->json([
                 'message' => 'Product added to cart successfully',
-                'cart' => $cart->load('items.product'),
+                'cart'    => $cart->load('items.product'),
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Cart add error: ' . $e->getMessage());
-            return response()->json([
-                'message' => 'Failed to add product to cart',
-            ], 500);
+            Log::error("Failed to add product to cart: {$e->getMessage()}");
+            return response()->json(['message' => 'Failed to add product to cart'], 500);
         }
     }
 
+    /**
+     * Hapus produk dari keranjang
+     */
     public function removeFromCart($productId)
     {
         if (!Auth::check()) {
@@ -85,24 +88,19 @@ class CartController extends Controller
 
         $cart = Cart::where('user_id', Auth::id())->first();
         if (!$cart) {
-            return response()->json([
-                'message' => 'Cart not found',
-            ], 404);
+            return response()->json(['message' => 'Cart not found'], 404);
         }
 
-        $cartItem = CartItem::where('cart_id', $cart->id)
-            ->where('product_id', $productId)
-            ->first();
+        $cartItem = $cart->items()->where('product_id', $productId)->first();
 
-        if ($cartItem) {
-            $cartItem->delete();
-            return response()->json([
-                'message' => 'Product removed from cart',
-            ]);
+        if (!$cartItem) {
+            return response()->json(['message' => 'Item not found in cart'], 404);
         }
+
+        $cartItem->delete();
 
         return response()->json([
-            'message' => 'Item not found in cart',
-        ], 404);
+            'message' => 'Product removed from cart',
+        ]);
     }
 }

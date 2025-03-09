@@ -7,38 +7,43 @@ import { useCart } from "../../contexts/CartContext";
 
 const CardProduct = ({ product }) => {
     const [quantity, setQuantity] = useState(1);
-     const [isLoading, setIsLoading] = useState(false);
-    const { updateCartItemCount } = useCart();
+    const [isLoading, setIsLoading] = useState(false);
+    const { addToCart } = useCart();
 
     const handleAddToCart = async (e) => {
-        e.preventDefault(); // Prevent default instead of stopPropagation
+        e.preventDefault();
         setIsLoading(true);
 
+        const requestData = {
+            product_id: product.id,
+            quantity: quantity,
+        };
+
+        console.log("Request Data:", requestData);
+
         try {
-            const response = await axios.post("/cart/add", {
-                product_id: product.id,
-                quantity: quantity,
+            const response = await axios.post("/cart/add", requestData, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
             });
 
-            // Update cart count with the new total rather than adding quantity
+            console.log("Response:", response.data);
+
             if (response.data.cart && response.data.cart.items) {
                 const totalItems = response.data.cart.items.reduce(
                     (sum, item) => sum + item.quantity,
                     0
                 );
-                updateCartItemCount(totalItems, true); // Pass true to set absolute value
+                addToCart(totalItems, true);
             }
 
             alert(response.data.message);
         } catch (error) {
-            if (error.response && error.response.status === 401) {
-                alert("You must be logged in to add products to cart");
-            } else if (error.response && error.response.status === 400) {
-                alert(error.response.data.message);
-            } else {
-                console.error("Error adding to cart:", error);
-                alert("Failed to add product to cart");
-            }
+            console.error("Error:", error.response?.data || error.message);
+            alert(
+                error.response?.data?.message || "Failed to add product to cart"
+            );
         } finally {
             setIsLoading(false);
         }

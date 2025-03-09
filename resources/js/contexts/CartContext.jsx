@@ -86,6 +86,28 @@ export const CartProvider = ({ children }) => {
         }
     };
 
+    const updateCartItem = async (productId, quantity) => {
+        setLoading(true);
+        try {
+            const response = await axios.put(`/cart/update/${productId}`, {
+                quantity,
+            });
+            if (response.data.cart && response.data.cart.items) {
+                setCartItems(response.data.cart.items);
+                setCartItemCount(
+                    response.data.cart.items.reduce(
+                        (sum, item) => sum + item.quantity,
+                        0
+                    )
+                );
+            }
+        } catch (error) {
+            console.error("Error updating cart item:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <CartContext.Provider
             value={{
@@ -94,6 +116,7 @@ export const CartProvider = ({ children }) => {
                 addToCart,
                 removeFromCart,
                 loading,
+                updateCartItem,
             }}
         >
             {children}

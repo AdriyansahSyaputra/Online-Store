@@ -3,44 +3,40 @@ import { Trash2, Minus, Plus } from "lucide-react";
 import { useCart } from "../../../contexts/CartContext";
 import axios from "axios";
 
-console.log(useCart());
 const CartItem = () => {
-    const { cartItems, updateCartItemCount } = useCart();
-
-    const updateItemQuantity = async (itemId, newQuantity) => {
-        if (newQuantity < 1) return;
-
-        try {
-            await axios.post("/cart/update", {
-                item_id: itemId,
-                quantity: newQuantity,
-            });
-
-            await fetchCartItems(); // Pastikan data selalu terbaru
-        } catch (error) {
-            console.error("Error updating item quantity:", error);
-            alert("Gagal mengubah jumlah produk");
-        }
-    };
-
+    const { cartItems, updateCartItem, removeFromCart } = useCart();
+    console.log(cartItems)
     const removeItem = async (itemId) => {
         try {
             await axios.delete(`/cart/remove/${itemId}`);
-            await fetchCartItems(); // Pastikan data selalu terbaru
+            removeFromCart(itemId); // Hapus dari state setelah sukses
         } catch (error) {
             console.error("Error removing item:", error);
             alert("Gagal menghapus produk dari keranjang");
         }
     };
 
+    const updateItemQuantity = async (itemId, newQuantity) => {
+        if (newQuantity < 1) return; // Pastikan quantity tidak kurang dari 1
+
+        try {
+            await axios.put(`/cart/update/${itemId}`, {
+                quantity: newQuantity,
+            });
+            updateCartItem(itemId, newQuantity);
+        } catch (error) {
+            console.error("Error updating quantity:", error);
+            alert("Gagal memperbarui jumlah produk");
+        }
+    };
+
     const formatCurrency = (amount) => {
-        return new Intl.NumberFormat("us-US", {
+        return new Intl.NumberFormat("id-ID", {
             style: "currency",
-            currency: "USD",
+            currency: "IDR",
         }).format(amount);
     };
 
-    // Tampilkan pesan jika keranjang kosong
     if (!cartItems || cartItems.length === 0) {
         return (
             <div className="flex-1 flex items-center justify-center p-6">
@@ -83,7 +79,7 @@ const CartItem = () => {
                                     {item.product?.name || "Product Name"}
                                 </h3>
                                 <p className="text-lg font-semibold text-indigo-600">
-                                    {formatCurrency(item.product?.price || "0")}
+                                    {formatCurrency(item.product?.price || 0)}
                                 </p>
 
                                 <div className="mt-3 flex items-center gap-4">
