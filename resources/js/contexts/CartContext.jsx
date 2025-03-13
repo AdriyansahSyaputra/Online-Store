@@ -40,20 +40,32 @@ export const CartProvider = ({ children }) => {
                 quantity: quantity,
             });
 
-            if (response.data.cart && response.data.cart.items) {
-                setCartItems(response.data.cart.items);
-                setCartItemCount(
-                    response.data.cart.items.reduce(
-                        (sum, item) => sum + item.quantity,
-                        0
-                    )
-                );
+            if (response.data.success) {
+                const addedProduct = response.data.product;
+
+                setCartItems((prevItems) => {
+                    const existingItem = prevItems.find(
+                        (item) => item.id === addedProduct.id
+                    );
+                    if (existingItem) {
+                        return prevItems.map((item) =>
+                            item.id === addedProduct.id
+                                ? {
+                                      ...item,
+                                      quantity: item.quantity + quantity,
+                                  }
+                                : item
+                        );
+                    }
+                    return [...prevItems, addedProduct]; // Tambahkan produk baru ke cart
+                });
+
+                setCartItemCount((prevCount) => prevCount + quantity);
             }
 
             return { success: true, message: response.data.message };
         } catch (error) {
             let message = "Gagal menambahkan produk ke keranjang";
-
             if (error.response) {
                 if (error.response.status === 401) {
                     message =
@@ -62,7 +74,6 @@ export const CartProvider = ({ children }) => {
                     message = error.response.data.message;
                 }
             }
-
             return { success: false, message };
         } finally {
             setLoading(false);

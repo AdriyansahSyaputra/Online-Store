@@ -17,14 +17,25 @@ const FormLogin = () => {
         setErrorMessage("");
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        post("/login", {
-            onSuccess: () => {},
-            onError: (errors) => {
-                setErrorMessage("Login failed. Please check your input.");
-            },
-        });
+
+        try {
+            await post("/login");
+        } catch (error) {
+            if (error.response) {
+                setErrorMessage(
+                    error.response.data.errors.credentials ||
+                        "Login failed. Please try again."
+                );
+            } else if (error.request) {
+                setErrorMessage(
+                    "No response from server. Please check your connection."
+                );
+            } else {
+                setErrorMessage("An error occurred. Please try again.");
+            }
+        }
     };
 
     return (
@@ -69,9 +80,16 @@ const FormLogin = () => {
                     </button>
                 </div>
 
-                <p className="text-xs md:text-sm text-red-500 font-medium">
-                    Error message
-                </p>
+                {/* Error Message */}
+                {errors.credentials && (
+                    <p className="text-red-500 text-sm mt-2">
+                        {errors.credentials}
+                    </p>
+                )}
+
+                {errorMessage && (
+                    <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
+                )}
 
                 {/* Forgot Password */}
                 <div className="flex justify-between">
@@ -102,8 +120,9 @@ const FormLogin = () => {
                 <button
                     type="submit"
                     className="w-full bg-blue-600 text-white py-3 rounded-lg hover:opacity-90 transition duration-300 flex items-center justify-center font-medium"
+                    disabled={processing}
                 >
-                    Login
+                    {processing ? "Logging in..." : "Login"}
                 </button>
 
                 {/* Divider */}
