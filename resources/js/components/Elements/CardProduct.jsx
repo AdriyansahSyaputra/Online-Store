@@ -14,36 +14,11 @@ const CardProduct = ({ product }) => {
         e.preventDefault();
         setIsLoading(true);
 
-        const requestData = {
-            product_id: product.id,
-            quantity: quantity,
-        };
-
-        console.log("Request Data:", requestData);
-
         try {
-            const response = await axios.post("/cart/add", requestData, {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-
-            console.log("Response:", response.data);
-
-            if (response.data.cart && response.data.cart.items) {
-                const totalItems = response.data.cart.items.reduce(
-                    (sum, item) => sum + item.quantity,
-                    0
-                );
-                addToCart(totalItems, true);
-            }
-
-            alert(response.data.message);
+            await addToCart(product.id, quantity);
+            alert("Product added to cart!");
         } catch (error) {
-            console.error("Error:", error.response?.data || error.message);
-            alert(
-                error.response?.data?.message || "Failed to add product to cart"
-            );
+            alert("Failed to add product to cart.");
         } finally {
             setIsLoading(false);
         }

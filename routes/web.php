@@ -60,9 +60,3 @@ Route::controller(ProductController::class)->group(function () {
     Route::get('/product', 'index');
     Route::get('/product/{slug}', 'detail');
 });
-
-
-Route::middleware('auth')->group(function () {
-    Route::post('/cart/add', [CartController::class, 'addToCart']);
-    Route::delete('/cart/remove/{productId}', [CartController::class, 'removeFromCart']);
-});

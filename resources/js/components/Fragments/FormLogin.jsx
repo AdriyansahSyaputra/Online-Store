@@ -21,7 +21,7 @@ const FormLogin = () => {
         e.preventDefault();
 
         try {
-            await post("/login");
+            post("/login");
         } catch (error) {
             if (error.response) {
                 setErrorMessage(

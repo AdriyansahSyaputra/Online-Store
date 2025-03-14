@@ -4,40 +4,16 @@ import { useCart } from "../../../contexts/CartContext";
 import axios from "axios";
 
 const CartItem = () => {
-    const { cartItems, updateCartItem, removeFromCart } = useCart();
-    console.log(cartItems)
-    const removeItem = async (itemId) => {
-        try {
-            await axios.delete(`/cart/remove/${itemId}`);
-            removeFromCart(itemId); // Hapus dari state setelah sukses
-        } catch (error) {
-            console.error("Error removing item:", error);
-            alert("Gagal menghapus produk dari keranjang");
-        }
-    };
-
-    const updateItemQuantity = async (itemId, newQuantity) => {
-        if (newQuantity < 1) return; // Pastikan quantity tidak kurang dari 1
-
-        try {
-            await axios.put(`/cart/update/${itemId}`, {
-                quantity: newQuantity,
-            });
-            updateCartItem(itemId, newQuantity);
-        } catch (error) {
-            console.error("Error updating quantity:", error);
-            alert("Gagal memperbarui jumlah produk");
-        }
-    };
+    const { cart, updateQuantity, removeItem } = useCart();
 
     const formatCurrency = (amount) => {
-        return new Intl.NumberFormat("id-ID", {
+        return new Intl.NumberFormat("us-US", {
             style: "currency",
-            currency: "IDR",
+            currency: "USD",
         }).format(amount);
     };
 
-    if (!cartItems || cartItems.length === 0) {
+    if (!cart || cart.length === 0) {
         return (
             <div className="flex-1 flex items-center justify-center p-6">
                 <div className="text-center">
@@ -58,7 +34,7 @@ const CartItem = () => {
     return (
         <div className="flex-1 overflow-y-auto px-2 py-2">
             <div className="space-y-4">
-                {cartItems.map((item) => (
+                {cart.map((item) => (
                     <div
                         key={item.id}
                         className="bg-white rounded-xl p-2 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200"
@@ -89,11 +65,12 @@ const CartItem = () => {
                                     <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-1">
                                         <button
                                             onClick={() =>
-                                                updateItemQuantity(
+                                                updateQuantity(
                                                     item.id,
                                                     item.quantity - 1
                                                 )
                                             }
+                                            disabled={item.quantity === 1}
                                             className="p-1 hover:bg-white rounded-md transition-colors duration-200"
                                         >
                                             <Minus className="w-4 h-4 text-gray-600" />
@@ -103,7 +80,7 @@ const CartItem = () => {
                                         </span>
                                         <button
                                             onClick={() =>
-                                                updateItemQuantity(
+                                                updateQuantity(
                                                     item.id,
                                                     item.quantity + 1
                                                 )

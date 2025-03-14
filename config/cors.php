@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://e-commerce.id/'],
+    'allowed_origins' => ['http://e-commerce.id'],
 
     'allowed_origins_patterns' => [],
 
