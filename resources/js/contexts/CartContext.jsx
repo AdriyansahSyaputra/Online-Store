@@ -14,11 +14,7 @@ export const CartProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        const initialize = async () => {
-            await axios.get("/sanctum/csrf-cookie", axiosConfig);
-            fetchCart();
-        };
-        initialize();
+        fetchCart();
     }, []);
 
     const fetchCart = async () => {
