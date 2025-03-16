@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CircleUser, Lock, Eye, EyeOff } from "lucide-react";
 import InputLabel from "../Elements/Input/InputLabel";
 import { useForm } from "@inertiajs/react";
+import axios from "axios";
 
 const FormLogin = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -20,8 +21,17 @@ const FormLogin = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+
         try {
-            post("/login");
+            await axios.get("/sanctum/csrf-cookie");
+            post("/login", {
+                preserveScroll: true, // Agar halaman tidak scroll ke atas saat error
+                onError: (error) => {
+                    setErrorMessage(
+                        error.credentials || "Login gagal. Coba lagi."
+                    );
+                },
+            });
         } catch (error) {
             if (error.response) {
                 setErrorMessage(

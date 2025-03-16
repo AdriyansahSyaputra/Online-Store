@@ -14,7 +14,7 @@ export const CartProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        fetchCart();
+        axios.get("/sanctum/csrf-cookie").then(fetchCart);
     }, []);
 
     const fetchCart = async () => {
@@ -22,17 +22,14 @@ export const CartProvider = ({ children }) => {
             const { data } = await axios.get("/api/cart", axiosConfig);
             setCart(data);
         } catch (error) {
-            handleError(error, "fetching cart");
+            console.error(
+                "Error fetching cart:",
+                error.response?.data?.message || error.message
+            );
         }
     };
 
     const addToCart = async (product) => {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (!user) {
-            alert("Anda harus login terlebih dahulu!");
-            return;
-        }
-
         try {
             await axios.post(
                 "/api/cart/add",
@@ -41,7 +38,10 @@ export const CartProvider = ({ children }) => {
             );
             fetchCart();
         } catch (error) {
-            handleError(error, "adding to cart");
+            console.error(
+                "Error adding to cart:",
+                error.response?.data?.message || error.message
+            );
         }
     };
 
@@ -49,38 +49,40 @@ export const CartProvider = ({ children }) => {
         try {
             await axios.patch(
                 "/api/cart/update",
-                { item_id: itemId, quantity: quantity },
+                { item_id: itemId, quantity },
                 axiosConfig
             );
             fetchCart();
         } catch (error) {
-            handleError(error, "updating quantity");
+            console.error(
+                "Error updating quantity:",
+                error.response?.data?.message || error.message
+            );
         }
     };
 
     const removeItem = async (itemId) => {
         try {
-            await axios.delete(`/api/cart/remove/${itemId}`, axiosConfig);
+            await axios.post(`/api/cart/remove/${itemId}`, {}, axiosConfig);
             fetchCart();
         } catch (error) {
-            handleError(error, "removing item");
+            console.error(
+                "Error removing item:",
+                error.response?.data?.message || error.message
+            );
         }
     };
 
     const clearCart = async () => {
         try {
-            await axios.delete("/api/cart/clear", axiosConfig);
+            await axios.post("/api/cart/clear", {}, axiosConfig);
             setCart([]);
         } catch (error) {
-            handleError(error, "clearing cart");
+            console.error(
+                "Error clearing cart:",
+                error.response?.data?.message || error.message
+            );
         }
-    };
-
-    const handleError = (error, action) => {
-        console.error(
-            `Error ${action}:`,
-            error.response?.data?.message || error.message
-        );
     };
 
     return (
