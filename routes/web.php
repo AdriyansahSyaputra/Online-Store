@@ -54,7 +54,7 @@ Route::controller(LoginController::class)->group(function () {
     Route::get('/login', 'index')->name('login');
     Route::post('/login', 'login');
     Route::post('/logout', 'logout')->name('logout');
-});
+})->middleware('guest');
 
 Route::controller(ProductController::class)->group(function () {
     Route::get('/product', 'index');

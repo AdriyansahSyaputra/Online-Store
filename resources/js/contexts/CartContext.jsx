@@ -6,88 +6,206 @@ const CartContext = createContext();
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
-    const [cart, setCart] = useState([]);
+    const [cart, setCart] = useState({ items: [], total_price: 0 });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    const axiosConfig = {
-        withCredentials: true,
-        headers: { Accept: "application/json" },
-    };
 
-    useEffect(() => {
-        axios.get("/sanctum/csrf-cookie").then(fetchCart);
-    }, []);
-
+    // Fungsi untuk mengambil data keranjang
     const fetchCart = async () => {
+        setLoading(true);
+        setError(null);
+
         try {
-            const { data } = await axios.get("/api/cart", axiosConfig);
+            // Ambil CSRF token terlebih dahulu
+            await axios.get("/sanctum/csrf-cookie");
+
+            // Ambil data keranjang
+            const { data } = await axios.get("/api/cart");
             setCart(data);
         } catch (error) {
             console.error(
-                "Error fetching cart:",
+                "Error mengambil data keranjang:",
                 error.response?.data?.message || error.message
             );
+            setError(
+                error.response?.data?.message ||
+                    "Terjadi kesalahan saat mengambil data keranjang"
+            );
+        } finally {
+            setLoading(false);
         }
     };
 
-    const addToCart = async (product) => {
+    // Ambil data keranjang saat komponen dimuat
+    useEffect(() => {
+        fetchCart();
+    }, []);
+
+    // Tambahkan produk ke keranjang
+    const addToCart = async (product_id, quantity = 1) => {
+        setLoading(true);
+        setError(null);
+
         try {
-            await axios.post(
-                "/api/cart/add",
-                { product_id: product.id },
-                axiosConfig
-            );
-            fetchCart();
+            // Ambil CSRF token terlebih dahulu
+            await axios.get("/sanctum/csrf-cookie");
+
+            // Tambahkan produk ke keranjang
+            const { data } = await axios.post("/api/cart/add", {
+                product_id,
+                quantity,
+            });
+
+            setCart({
+                items: data.items,
+                total_price: data.total_price,
+            });
+
+            return { success: true, message: data.message };
         } catch (error) {
             console.error(
-                "Error adding to cart:",
+                "Error menambahkan ke keranjang:",
                 error.response?.data?.message || error.message
             );
+            setError(
+                error.response?.data?.message ||
+                    "Terjadi kesalahan saat menambahkan produk ke keranjang"
+            );
+            return {
+                success: false,
+                message: error.response?.data?.message || "Terjadi kesalahan",
+            };
+        } finally {
+            setLoading(false);
         }
     };
 
-    const updateQuantity = async (itemId, quantity) => {
+    // Perbarui jumlah produk di keranjang
+    const updateQuantity = async (item_id, quantity) => {
+        setLoading(true);
+        setError(null);
+
         try {
-            await axios.patch(
-                "/api/cart/update",
-                { item_id: itemId, quantity },
-                axiosConfig
-            );
-            fetchCart();
+            // Ambil CSRF token terlebih dahulu
+            await axios.get("/sanctum/csrf-cookie");
+
+            // Perbarui jumlah produk
+            const { data } = await axios.patch("/api/cart/update", {
+                item_id,
+                quantity,
+            });
+
+            setCart({
+                items: data.items,
+                total_price: data.total_price,
+            });
+
+            return { success: true, message: data.message };
         } catch (error) {
             console.error(
-                "Error updating quantity:",
+                "Error memperbarui jumlah:",
                 error.response?.data?.message || error.message
             );
+            setError(
+                error.response?.data?.message ||
+                    "Terjadi kesalahan saat memperbarui jumlah produk"
+            );
+            return {
+                success: false,
+                message: error.response?.data?.message || "Terjadi kesalahan",
+            };
+        } finally {
+            setLoading(false);
         }
     };
 
+    // Hapus produk dari keranjang
     const removeItem = async (itemId) => {
+        setLoading(true);
+        setError(null);
+
         try {
-            await axios.post(`/api/cart/remove/${itemId}`, {}, axiosConfig);
-            fetchCart();
+            // Ambil CSRF token terlebih dahulu
+            await axios.get("/sanctum/csrf-cookie");
+
+            // Hapus produk dari keranjang
+            const { data } = await axios.delete(`/api/cart/remove/${itemId}`);
+
+            setCart({
+                items: data.items,
+                total_price: data.total_price,
+            });
+
+            return { success: true, message: data.message };
         } catch (error) {
             console.error(
-                "Error removing item:",
+                "Error menghapus produk:",
                 error.response?.data?.message || error.message
             );
+            setError(
+                error.response?.data?.message ||
+                    "Terjadi kesalahan saat menghapus produk dari keranjang"
+            );
+            return {
+                success: false,
+                message: error.response?.data?.message || "Terjadi kesalahan",
+            };
+        } finally {
+            setLoading(false);
         }
     };
 
+    // Kosongkan keranjang
     const clearCart = async () => {
+        setLoading(true);
+        setError(null);
+
         try {
-            await axios.post("/api/cart/clear", {}, axiosConfig);
-            setCart([]);
+            // Ambil CSRF token terlebih dahulu
+            await axios.get("/sanctum/csrf-cookie");
+
+            // Kosongkan keranjang
+            const { data } = await axios.post("/api/cart/clear");
+
+            setCart({
+                items: [],
+                total_price: 0,
+            });
+
+            return { success: true, message: data.message };
         } catch (error) {
             console.error(
-                "Error clearing cart:",
+                "Error mengosongkan keranjang:",
                 error.response?.data?.message || error.message
             );
+            setError(
+                error.response?.data?.message ||
+                    "Terjadi kesalahan saat mengosongkan keranjang"
+            );
+            return {
+                success: false,
+                message: error.response?.data?.message || "Terjadi kesalahan",
+            };
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <CartContext.Provider
-            value={{ cart, addToCart, updateQuantity, removeItem, clearCart }}
+            value={{
+                cart: cart.items,
+                cartItems: cart.items,
+                totalPrice: cart.total_price,
+                loading,
+                error,
+                addToCart,
+                updateQuantity,
+                removeItem,
+                clearCart,
+                refreshCart: fetchCart,
+            }}
         >
             {children}
         </CartContext.Provider>

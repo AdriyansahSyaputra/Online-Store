@@ -4,7 +4,7 @@ import { useCart } from "../../../contexts/CartContext";
 import axios from "axios";
 
 const CartItem = () => {
-    const { cart, updateQuantity, removeItem } = useCart();
+    const { cart, loading, error, updateQuantity, removeItem } = useCart();
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat("us-US", {
@@ -12,6 +12,25 @@ const CartItem = () => {
             currency: "USD",
         }).format(amount);
     };
+
+    if (loading)
+        return <div className="text-center py-10">Memuat keranjang...</div>;
+
+    if (error)
+        return <div className="text-center py-10 text-red-500">{error}</div>;
+
+    if (!cart.items || cart.items.length === 0) {
+        return (
+            <div className="text-center py-10">
+                <h2 className="text-xl font-semibold mb-4">
+                    Keranjang Anda kosong
+                </h2>
+                <a href="/products" className="text-blue-600 hover:underline">
+                    Lanjutkan Belanja
+                </a>
+            </div>
+        );
+    }
 
     if (!cart || cart.length === 0) {
         return (

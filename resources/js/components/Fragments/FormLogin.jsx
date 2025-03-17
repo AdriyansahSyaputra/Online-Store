@@ -25,7 +25,7 @@ const FormLogin = () => {
         try {
             await axios.get("/sanctum/csrf-cookie");
             post("/login", {
-                preserveScroll: true, // Agar halaman tidak scroll ke atas saat error
+                preserveScroll: true,
                 onError: (error) => {
                     setErrorMessage(
                         error.credentials || "Login gagal. Coba lagi."
