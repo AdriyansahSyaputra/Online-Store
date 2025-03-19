@@ -4,44 +4,78 @@ import { useCart } from "../../../contexts/CartContext";
 import axios from "axios";
 
 const CartItem = () => {
-    const { cart, loading, error, updateQuantity, removeItem } = useCart();
+    const {
+        cartItems,
+        loading,
+        error,
+        updateQuantity,
+        removeItem,
+        isAuthenticated,
+    } = useCart();
 
     const formatCurrency = (amount) => {
-        return new Intl.NumberFormat("us-US", {
+        return new Intl.NumberFormat("id-ID", {
             style: "currency",
-            currency: "USD",
+            currency: "IDR",
+            minimumFractionDigits: 0,
         }).format(amount);
     };
 
-    if (loading)
-        return <div className="text-center py-10">Memuat keranjang...</div>;
-
-    if (error)
-        return <div className="text-center py-10 text-red-500">{error}</div>;
-
-    if (!cart.items || cart.items.length === 0) {
+    // Menampilkan pesan loading
+    if (loading) {
         return (
-            <div className="text-center py-10">
-                <h2 className="text-xl font-semibold mb-4">
-                    Keranjang Anda kosong
-                </h2>
-                <a href="/products" className="text-blue-600 hover:underline">
-                    Lanjutkan Belanja
-                </a>
+            <div className="flex-1 flex items-center justify-center p-6">
+                <div className="text-center">
+                    <div className="animate-spin h-8 w-8 border-4 border-amber-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                    <p className="text-gray-500">Memuat keranjang...</p>
+                </div>
             </div>
         );
     }
 
-    if (!cart || cart.length === 0) {
+    // Menampilkan pesan error
+    if (error) {
+        return (
+            <div className="flex-1 flex items-center justify-center p-6">
+                <div className="text-center">
+                    <div className="text-red-500 text-lg mb-2">⚠️ Error</div>
+                    <p className="text-gray-500">{error}</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Menampilkan pesan bila user belum login
+    if (!isAuthenticated) {
         return (
             <div className="flex-1 flex items-center justify-center p-6">
                 <div className="text-center">
                     <p className="text-gray-500 mb-2">
+                        Silakan login untuk melihat keranjang Anda
+                    </p>
+                    <a
+                        href="/login"
+                        className="inline-block px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
+                    >
+                        Login Sekarang
+                    </a>
+                </div>
+            </div>
+        );
+    }
+
+    // Menampilkan pesan keranjang kosong
+    if (!cartItems || cartItems.length === 0) {
+        return (
+            <div className="flex-1 flex items-center justify-center p-6">
+                <div className="text-center">
+                    <div className="text-5xl mb-3">🛒</div>
+                    <p className="text-gray-500 mb-2">
                         Keranjang belanja Anda kosong
                     </p>
                     <a
-                        href="/product"
-                        className="text-indigo-600 hover:underline text-sm"
+                        href="/products"
+                        className="text-amber-500 hover:underline text-sm"
                     >
                         Lihat produk kami
                     </a>
@@ -53,7 +87,7 @@ const CartItem = () => {
     return (
         <div className="flex-1 overflow-y-auto px-2 py-2">
             <div className="space-y-4">
-                {cart.map((item) => (
+                {cartItems.map((item) => (
                     <div
                         key={item.id}
                         className="bg-white rounded-xl p-2 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200"

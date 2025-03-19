@@ -52,6 +52,17 @@ const Navbar = () => {
         );
     };
 
+    const openCart = () => {
+        if (!auth.user) {
+            // Jika belum login, redirect ke halaman login
+            router.visit("/login");
+            return;
+        }
+
+        // Jika sudah login, buka cart sidebar
+        setIsCartOpen(true);
+    };
+
     return (
         <>
             <header className="bg-white lg:border-b border-gray-200">
@@ -89,7 +100,7 @@ const Navbar = () => {
                         {/* Desktop Cart and Auth */}
                         <div className="hidden lg:flex items-center space-x-10 ">
                             <button
-                                onClick={() => setIsCartOpen(true)}
+                                onClick={openCart}
                                 className="text-slate-700 hover:text-amber-500 hidden lg:flex items-center relative"
                             >
                                 <ShoppingCart size={20} />

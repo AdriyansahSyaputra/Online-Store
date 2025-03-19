@@ -5,13 +5,23 @@ namespace App\Http\Controllers\Client;
 use App\Models\Cart;
 use App\Models\CartItem;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
+    /**
+     * Memastikan user sudah login untuk semua metode kecuali yang diizinkan
+     */
+    public function __construct()
+    {
+        $this->midleware('auth:sanctum');
+    }
+
+    /**
+     * Ambil data keranjang pengguna
+     */
     public function getCart()
     {
         Log::info('Accessing cart', [
@@ -21,17 +31,15 @@ class CartController extends Controller
 
         $user = Auth::user();
 
-        if (!$user) {
-            return response()->json(['message' => 'Unauthenticated'], 401);
-        }
-
         $cart = Cart::with('items.product')->firstOrCreate(['user_id' => $user->id]);
 
         // Hitung total harga
         $totalPrice = 0;
         foreach ($cart->items as $item) {
-            $item->subtotal = $item->quantity * $item->product->price;
-            $totalPrice += $item->subtotal;
+            if ($item->product) { // Pastikan product ada
+                $item->subtotal = $item->quantity * $item->product->price;
+                $totalPrice += $item->subtotal;
+            }
         }
 
         return response()->json([
@@ -40,6 +48,9 @@ class CartController extends Controller
         ]);
     }
 
+    /**
+     * Tambahkan produk ke keranjang
+     */
     public function addToCart(Request $request)
     {
         $request->validate([
@@ -50,19 +61,31 @@ class CartController extends Controller
         $user = Auth::user();
         $cart = Cart::firstOrCreate(['user_id' => $user->id]);
 
-        $cartItem = $cart->items()->updateOrCreate(
-            ['product_id' => $request->product_id],
-            ['quantity' => DB::raw('quantity + ' . ($request->quantity ?? 1))]
-        );
+        // Periksa apakah item sudah ada di keranjang
+        $existingItem = $cart->items()->where('product_id', $request->product_id)->first();
 
-        // Reload cart with related data
+        if ($existingItem) {
+            // Update quantity jika sudah ada
+            $existingItem->quantity += $request->quantity;
+            $existingItem->save();
+        } else {
+            // Buat item baru jika belum ada
+            $cart->items()->create([
+                'product_id' => $request->product_id,
+                'quantity' => $request->quantity
+            ]);
+        }
+
+        // Reload cart dengan data terkait
         $cart->load('items.product');
 
         // Hitung total harga
         $totalPrice = 0;
         foreach ($cart->items as $item) {
-            $item->subtotal = $item->quantity * $item->product->price;
-            $totalPrice += $item->subtotal;
+            if ($item->product) {
+                $item->subtotal = $item->quantity * $item->product->price;
+                $totalPrice += $item->subtotal;
+            }
         }
 
         return response()->json([
@@ -72,6 +95,9 @@ class CartController extends Controller
         ]);
     }
 
+    /**
+     * Update jumlah produk di keranjang
+     */
     public function updateQuantity(Request $request)
     {
         $request->validate([
@@ -93,8 +119,10 @@ class CartController extends Controller
         // Hitung total harga
         $totalPrice = 0;
         foreach ($cart->items as $item) {
-            $item->subtotal = $item->quantity * $item->product->price;
-            $totalPrice += $item->subtotal;
+            if ($item->product) {
+                $item->subtotal = $item->quantity * $item->product->price;
+                $totalPrice += $item->subtotal;
+            }
         }
 
         return response()->json([
@@ -104,6 +132,9 @@ class CartController extends Controller
         ]);
     }
 
+    /**
+     * Hapus item dari keranjang
+     */
     public function removeItem($id)
     {
         $cartItem = CartItem::findOrFail($id);
@@ -121,8 +152,10 @@ class CartController extends Controller
         // Hitung total harga
         $totalPrice = 0;
         foreach ($cart->items as $item) {
-            $item->subtotal = $item->quantity * $item->product->price;
-            $totalPrice += $item->subtotal;
+            if ($item->product) {
+                $item->subtotal = $item->quantity * $item->product->price;
+                $totalPrice += $item->subtotal;
+            }
         }
 
         return response()->json([
@@ -132,6 +165,9 @@ class CartController extends Controller
         ]);
     }
 
+    /**
+     * Kosongkan keranjang
+     */
     public function clearCart()
     {
         $user = Auth::user();
